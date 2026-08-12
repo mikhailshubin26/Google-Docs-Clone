@@ -1,0 +1,12 @@
+.env
+!.env.example
+
+.venv/
+venv/
+
+*.pyc
+__pycache__/
+
+.idea/
+
+.DS_Store

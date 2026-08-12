@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+structlog
+passlib
+PyJWT
+redis
+SQLAlchemy
