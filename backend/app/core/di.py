@@ -97,7 +97,7 @@ def get_auth_service(
 ) -> AuthService:
     return AuthService(user_repo=user_repo, settings=settings)
 
-def get_permission_services(
+def get_permission_service(
         document_repo: Annotated[DocumentRepository, Depends(get_document_repository)],
         permission_repo: Annotated[PermissionRepository, Depends(get_permission_repository)],
 ) -> PermissionService:
