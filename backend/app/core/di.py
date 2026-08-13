@@ -10,10 +10,12 @@ from collections.abc import AsyncGenerator
 
 from app.domain.repositories.document import DocumentRepository
 from app.domain.repositories.operation_log import OperationLogRepository
+from app.domain.repositories.permission import PermissionRepository
 from app.domain.repositories.user import UserRepository
 
 from app.infrastructure.db.repositories.user import SqlAlchemyUserRepository
 from app.infrastructure.db.repositories.document import SqlAlchemyDocumentRepository
+from app.infrastructure.db.repositories.permission import SqlAlchemyPermissionRepository
 from app.infrastructure.redis.operation_log import RedisOperationLogRepository
 from app.application.services.auth_service import AuthService
 from app.application.services.permission_service import PermissionService
@@ -67,6 +69,12 @@ def get_user_repository(
 ) -> UserRepository:
     return SqlAlchemyUserRepository(session)
 
+# Отдаёт реализацию PermissionRepository поверх текущей сессии БД
+def get_permission_repository(
+        session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> PermissionRepository:
+    return SqlAlchemyPermissionRepository(session)
+
 # Отдаёт реализацию DocumentRepository поверх текущей сессии БД
 def get_document_repository(
         session: Annotated[AsyncSession, Depends(get_db_session)],
@@ -91,8 +99,9 @@ def get_auth_service(
 
 def get_permission_services(
         document_repo: Annotated[DocumentRepository, Depends(get_document_repository)],
+        permission_repo: Annotated[PermissionRepository, Depends(get_permission_repository)],
 ) -> PermissionService:
-    return PermissionService(document_repo=document_repo)
+    return PermissionService(document_repo=document_repo, permission_repo=permission_repo)
 
 def get_document_service(
         document_repo: Annotated[DocumentRepository, Depends(get_document_repository)],
