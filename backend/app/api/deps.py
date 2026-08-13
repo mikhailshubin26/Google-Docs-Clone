@@ -27,7 +27,7 @@ async def get_current_user_id(
     try:
         # Сначала пробуем как обычный access-токен. При неудаче — как гостевой
         return decode_token(token, settings, TokenType.ACCESS)
-    except InvalidTokenError
+    except InvalidTokenError:
         try:
             return decode_token(token, settings, TokenType.GUEST)
         except InvalidTokenError as exc:
