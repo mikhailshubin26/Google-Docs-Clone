@@ -52,7 +52,7 @@ async def domain_error_handler(request: Request, exc: DomainError) -> JSONRespon
     return JSONResponse(status_code=400 , content={"detail": str(exc)})
 
 @app.get("/health")
-async def health_check() -> dict[str, str]
+async def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 app.include_router(v1_router)
