@@ -1,9 +1,29 @@
-fastapi
-uvicorn
-pydantic
-pydantic-settings
-structlog
-passlib
-PyJWT
-redis
-SQLAlchemy
+# --- Web framework ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# --- Database ---
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+
+# --- Redis ---
+redis==5.2.1
+
+# --- Auth ---
+pyjwt==2.10.1
+passlib[argon2]==1.7.4
+
+# --- Config & validation ---
+pydantic==2.10.4
+pydantic-settings==2.7.0
+email-validator==2.2.0
+
+# --- Logging ---
+structlog==24.4.0
+
+# --- Testing (dev) ---
+pytest==8.3.4
+pytest-asyncio==0.25.0
+httpx==0.28.1
+hypothesis==6.123.2
