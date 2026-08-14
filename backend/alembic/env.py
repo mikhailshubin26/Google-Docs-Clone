@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.core.config import get_settings
 from app.infrastructure.db.session import Base
+import app.infrastructure.db.models
 
 config = context.config
 
@@ -45,7 +46,7 @@ async def run_migration_online() -> None:
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
 
-    await connection.dispose()
+    await connectable.dispose()
 
 if context.is_offline_mode():
     run_migrations_offline()
