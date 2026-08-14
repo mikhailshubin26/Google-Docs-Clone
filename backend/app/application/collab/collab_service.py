@@ -6,7 +6,7 @@ from app.application.interfaces.pubsub import PubSub
 from app.application.ot.controller import OTController
 from app.domain.ot.operation import Operation
 from app.infrastructure.redis.presence_store import RedisPresenceStore
-from app.mappers.operation import operation_to_json
+from app.mappers.operation import operation_to_dict
 
 
 # Формирует имя Pub/Sub канала для документа
@@ -78,15 +78,16 @@ class CollabService:
     """
     async def submit_operation(
             self, document_id: UUID, user_id: UUID, operation: Operation
-    ) -> None:
+    ) -> int:
         transformed_op, new_revision = await self._ot_controller.submit_operation(document_id, operation)
         message = {
             "type": "op_broadcast",
-            "operation": operation_to_json(transformed_op),
+            "operation": operation_to_dict(transformed_op),
             "revision": new_revision,
             "author_id": str(user_id),
         }
         await self._pubsub.publish(_channel_for(document_id), message)
+        return new_revision
 
     # Продливаем TTL-присутствия пользователя
     async def heartbeat(self, document_id: UUID, user_id: UUID, display_name: str) -> None:

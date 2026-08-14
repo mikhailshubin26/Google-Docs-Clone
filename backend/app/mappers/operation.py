@@ -22,6 +22,23 @@ def _component_from_dict(data: dict) -> OpComponent:
         return Delete(count=data["count"])
     raise ValueError(f"Unknown operation component: {comp_type!r}")
 
+# Сериализует operation в словарь — используется в WS
+def operation_to_dict(operation: Operation) -> dict:
+    return {
+        "components": [_component_to_dict(c) for c in operation.components],
+        "client_id": operation.client_id,
+        "base_revision": operation.base_revision,
+    }
+
+# Десереализует dict в Operation
+def operation_from_dict(data: dict) -> Operation:
+    components = tuple(_component_from_dict(c) for c in data["components"])
+    return Operation(
+        components=components,
+        client_id=data["client_id"],
+        base_revision=data["base_revision"],
+    )
+
 
 def operation_to_json(operation: Operation) -> str:
     data = {
