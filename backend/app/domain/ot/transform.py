@@ -1,4 +1,4 @@
-from backend.app.domain.ot.operation import Operation, OpComponent, Insert, Retain, Delete
+from app.domain.ot.operation import Operation, OpComponent, Insert, Retain, Delete
 
 # Приводит две операции, построенные от одной и той же ревизии документа.
 def transform(op_a: Operation, op_b: Operation) -> tuple[Operation, Operation]:
@@ -12,7 +12,7 @@ def transform(op_a: Operation, op_b: Operation) -> tuple[Operation, Operation]:
     a_comp, a_ops = _next(a_ops)
     b_comp, b_ops = _next(b_ops)
 
-    while a_comp is not None and b_comp is not None:
+    while a_comp is not None or b_comp is not None:
         # Случай Insert/Insert
         if isinstance(a_comp, Insert):
             a_prime.append(a_comp)
@@ -25,6 +25,9 @@ def transform(op_a: Operation, op_b: Operation) -> tuple[Operation, Operation]:
             b_prime.append(b_comp)
             b_comp, b_ops = _next(b_ops)
             continue
+
+        if a_comp is None or b_comp is None:
+            break
 
         # Случаи Retain/Retain; Delete/Delete; Delete/Retain; Retain/Delete;
         len_a = _length(a_comp)

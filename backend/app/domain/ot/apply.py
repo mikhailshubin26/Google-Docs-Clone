@@ -1,5 +1,5 @@
-from backend.app.domain.ot.operation import Operation, Retain, Delete, Insert
-from backend.app.domain.exceptions import InvalidOperationError
+from app.domain.ot.operation import Operation, Retain, Delete, Insert
+from app.domain.exceptions import InvalidOperationError
 
 
 # Применяет операцию к тексту документа и возвращает новый текст

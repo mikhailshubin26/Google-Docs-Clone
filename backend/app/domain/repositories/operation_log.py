@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import Protocol
 
-from backend.app.domain.ot.operation import Operation
+from app.domain.ot.operation import Operation
 
 # Абстрактный контракт лога OT-операций
 

@@ -1,7 +1,7 @@
 from typing import Protocol
 from uuid import UUID
 
-from backend.app.domain.entities.document import Document
+from app.domain.entities.document import Document
 
 # Абстрактный контракт хранилища документов
 
