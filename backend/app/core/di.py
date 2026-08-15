@@ -132,7 +132,7 @@ def get_permission_service(
 
 def get_document_service(
         document_repo: Annotated[DocumentRepository, Depends(get_document_repository)],
-        permission_service: Annotated[PermissionService, Depends(get_permission_services)],
+        permission_service: Annotated[PermissionService, Depends(get_permission_service)],
 ) -> DocumentService:
     return DocumentService(document_repo=document_repo, permission_service=permission_service)
 

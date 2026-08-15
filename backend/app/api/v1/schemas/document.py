@@ -54,6 +54,6 @@ class DocumentContentResponse(BaseModel):
         )
 
 class DocumentListResponse(BaseModel):
-    items: list[DocumentContentResponse]
+    items: list[DocumentResponse]
     limit: int
     offset: int

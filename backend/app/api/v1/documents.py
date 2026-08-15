@@ -2,14 +2,15 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.sql.annotation import Annotated
+
+from typing import Annotated
 
 from app.api.deps import get_current_user_id
 from app.api.v1.schemas.document import DocumentResponse, CreateDocumentRequest, DocumentListResponse, \
     DocumentContentResponse, RenameDocumentRequest
 from app.application.services.document_service import DocumentService
 from app.core.di import get_document_service
-from app.domain.exceptions import DocumentNotFoundError
+from app.domain.exceptions import DocumentNotFoundError, PermissionDeniedError
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -39,14 +40,14 @@ async def list_my_documents(
 @router.get("/{document_id}", response_model=DocumentContentResponse)
 async def get_document(
         document_id: UUID,
-        user_ud: Annotated[UUID, Depends(get_current_user_id)],
+        user_id: Annotated[UUID, Depends(get_current_user_id)],
         document_service: Annotated[DocumentService, Depends(get_document_service)],
 ) -> DocumentContentResponse:
     try:
-        document = await document_service.get_document(document_id=document_id, owner_id=user_ud)
+        document = await document_service.get_document(document_id=document_id, user_id=user_id)
     except DocumentNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-    except PermissionError as exc:
+    except PermissionDeniedError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     return DocumentContentResponse.from_entity(document)
 
@@ -63,7 +64,7 @@ async def rename_document(
         )
     except DocumentNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-    except PermissionError as exc:
+    except PermissionDeniedError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     return DocumentResponse.from_entity(document)
 
@@ -77,5 +78,5 @@ async def delete_document(
         document = await document_service.delete_document(document_id=document_id, user_id=user_id)
     except DocumentNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-    except PermissionError as exc:
+    except PermissionDeniedError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.dialects.postgresql import pg_insert
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from app.domain.entities.permission import Role, Permission
 from app.infrastructure.db.models.permission import PermissionModel

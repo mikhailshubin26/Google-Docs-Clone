@@ -6,7 +6,7 @@ from app.api.v1.schemas.auth import TokenPairResponse, RegisterRequest, LoginReq
     UpgradeGuestRequest, RefreshRequest
 from app.application.services.auth_service import AuthService
 from app.core.di import get_auth_service
-from app.domain.exceptions import UserAlreadyExistsError, InvalidCredentialsError, UserNotFoundError
+from app.domain.exceptions import UserAlreadyExistsError, InvalidCredentialsError, UserNotFoundError, InvalidTokenError
 from app.api.deps import get_current_user_id
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -56,7 +56,7 @@ async def upgrade_guest(
             email=body.email,
             password=body.password)
     except UserNotFoundError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
     except UserAlreadyExistsError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return TokenPairResponse(access_token=tokens.access_token, refresh_token=tokens.refresh_token)
@@ -68,6 +68,6 @@ async def refresh(
 ) -> TokenPairResponse:
     try:
         tokens = await auth_service.refresh(body.refresh_token)
-    except (InvalidCredentialsError, UserNotFoundError) as exc:
+    except (InvalidTokenError, UserNotFoundError) as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
     return TokenPairResponse(access_token=tokens.access_token, refresh_token=tokens.refresh_token)

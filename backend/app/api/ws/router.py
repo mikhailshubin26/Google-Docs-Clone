@@ -1,4 +1,4 @@
-from fastapi import Query, Depends
+from fastapi import Query, Depends, APIRouter
 from typing import Annotated
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from uuid import UUID
@@ -15,7 +15,7 @@ from app.domain.repositories.user import UserRepository
 from app.domain.entities.user import User
 from app.mappers.operation import operation_from_dict
 
-router = APIRouter(prefix='ws', tags=['websocket'])
+router = APIRouter(prefix='/ws', tags=['websocket'])
 _HEARTBEAT_INTERVAL_SECONDS = 15
 _WS_AUTH_FAILED_CODE = 4401
 
