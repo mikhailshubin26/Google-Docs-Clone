@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timezone
 
 """
 Document — Описывает метаданные документа, но не его содержание, так как последнее
@@ -33,11 +33,11 @@ class Document:
             )
         self.content_snapshot = content
         self.revision = revision
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)
 
     # метод мягкого удаления
     def mark_deleted(self) -> None:
-        self.deleted_at = datetime.utcnow()
+        self.deleted_at = datetime.now(timezone.utc)
 
     def is_deleted(self) -> bool:
         return self.deleted_at is not None

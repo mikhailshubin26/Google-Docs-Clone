@@ -22,7 +22,7 @@ class PermissionService:
     # Проверяет, что у пользователя достаточно прав
     async def check_permission(self, document_id: UUID, user_id: UUID, required_role: Role) -> None:
         role = await self.get_effective_role(document_id, user_id)
-        if role is None or not role.satisfiles(required_role):
+        if role is None or not role.satisfies(required_role):
             raise PermissionDeniedError(
                 user_id=user_id,
                 document_id=document_id,

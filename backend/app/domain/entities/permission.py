@@ -9,7 +9,7 @@ class Role(IntEnum):
     EDITOR = 2
     OWNER = 3
 
-    def satisfiles(self, required: "Role") -> bool:
+    def satisfies(self, required: "Role") -> bool:
         return self >= required
 
 # Permission — Описывает права, которые имеет пользователь на работу с документом
