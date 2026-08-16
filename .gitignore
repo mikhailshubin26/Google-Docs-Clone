@@ -10,3 +10,6 @@ __pycache__/
 .idea/
 
 .DS_Store
+
+# Hypothesis cache
+.hypothesis/

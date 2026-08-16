@@ -1,14 +1,15 @@
 # CRUD-роуты для документов
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Response
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from app.api.deps import get_current_user_id
 from app.api.v1.schemas.document import DocumentResponse, CreateDocumentRequest, DocumentListResponse, \
     DocumentContentResponse, RenameDocumentRequest
 from app.application.services.document_service import DocumentService
+from app.application.services.export_service import ExportService, UnsupportedExportFormatError
 from app.core.di import get_document_service
 from app.domain.exceptions import DocumentNotFoundError, PermissionDeniedError
 
@@ -80,3 +81,29 @@ async def delete_document(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except PermissionDeniedError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+
+@router.get("/{document_id}/export")
+async def export_document(
+        document_id: UUID,
+        user_id: Annotated[UUID, Depends(get_current_user_id)],
+        export_service: Annotated[ExportService, Depends(ExportService)],
+        format: Literal["txt", "docx"] = "txt"
+) -> Response:
+    try:
+        content, content_type, filename = await export_service.export_document(
+            document_id=document_id,
+            user_id=user_id,
+            format_name=format,
+        )
+    except DocumentNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except PermissionDeniedError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    except UnsupportedExportFormatError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+    return Response(
+        content=content,
+        media_type=content_type,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )

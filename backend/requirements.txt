@@ -27,3 +27,6 @@ pytest==8.3.4
 pytest-asyncio==0.25.0
 httpx==0.28.1
 hypothesis==6.123.2
+
+# --- Document Files ---
+python-docx==1.2.0

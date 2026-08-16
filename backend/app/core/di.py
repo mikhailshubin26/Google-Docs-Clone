@@ -5,8 +5,10 @@ from fastapi import Depends
 
 from app.application.collab.collab_service import CollabService
 from app.application.collab.room_manager import RoomManager
+from app.application.interfaces.exporter import Exporter
 from app.application.interfaces.pubsub import PubSub
 from app.application.ot.controller import OTController
+from app.application.services.export_service import ExportService
 from app.core.config import Settings, get_settings
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
@@ -21,6 +23,8 @@ from app.domain.repositories.user import UserRepository
 from app.infrastructure.db.repositories.user import SqlAlchemyUserRepository
 from app.infrastructure.db.repositories.document import SqlAlchemyDocumentRepository
 from app.infrastructure.db.repositories.permission import SqlAlchemyPermissionRepository
+from app.infrastructure.export.docx_exporter import DocxExporter
+from app.infrastructure.export.txt_export import TxtExporter
 from app.infrastructure.redis.operation_log import RedisOperationLogRepository
 from app.application.services.auth_service import AuthService
 from app.application.services.permission_service import PermissionService
@@ -160,4 +164,19 @@ def get_collab_service(
         room_manager=room_manager,
         pubsub=pubsub,
         presence_store=presence_store,
+    )
+
+# Реестр доступных форматов экспорта
+def get_exporters() -> dict[str, Exporter]:
+    return {
+        "txt": TxtExporter(),
+        "docx": DocxExporter(),
+    }
+
+def get_exporter_service(
+        document_service: Annotated[DocumentService, Depends(get_document_service)],
+        exporters: Annotated[dict[str, Exporter], Depends(get_exporters)],
+) -> ExportService:
+    return ExportService(
+        document_service=document_service, exporters=exporters,
     )
