@@ -19,7 +19,7 @@ class RoomManager:
 
     # Убирает пользователя из команты. Если комната опустела — удаляет её из словаря целиком
     def leave(self, document_id: UUID, user_id: UUID) -> None:
-        room = self._rooms.get(document_id, {})
+        room = self._rooms.get(document_id)
         if room is None:
             return
         room.pop(user_id, None)
@@ -28,7 +28,7 @@ class RoomManager:
 
     # Возвращает все подключения комнаты
     def get_connection(self, document_id: UUID) -> dict[UUID, Connection]:
-        room = self._rooms.get(document_id, {})
+        return self._rooms.get(document_id, {})
 
     # Рассылка сообщения всем локальным подключением в комнате.
     async def broadcast_local(

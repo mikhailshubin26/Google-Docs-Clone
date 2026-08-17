@@ -39,6 +39,7 @@ from app.infrastructure.redis.pubsub import RedisPubSub
 _engine = None
 _session_factory = None
 _redis_client: Redis | None = None
+_room_manager: RoomManager | None = None
 
 # Создаёт при первом вызове и возвращает SQLAlchemy engine — пул соединений с Postgres
 def get_engine(settings: Annotated[Settings, Depends(get_settings)]):
@@ -150,7 +151,7 @@ def get_ot_controller(
     return OTController(
         document_repo=document_repo,
         operation_log_repo=operation_log_repo,
-        compact_threshold=settings.operation_compact_threshold,
+        compact_threshold=settings.operation_log_compact_threshold,
     )
 
 def get_collab_service(
@@ -173,7 +174,7 @@ def get_exporters() -> dict[str, Exporter]:
         "docx": DocxExporter(),
     }
 
-def get_exporter_service(
+def get_export_service(
         document_service: Annotated[DocumentService, Depends(get_document_service)],
         exporters: Annotated[dict[str, Exporter], Depends(get_exporters)],
 ) -> ExportService:

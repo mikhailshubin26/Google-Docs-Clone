@@ -10,7 +10,7 @@ from app.api.v1.schemas.document import DocumentResponse, CreateDocumentRequest,
     DocumentContentResponse, RenameDocumentRequest
 from app.application.services.document_service import DocumentService
 from app.application.services.export_service import ExportService, UnsupportedExportFormatError
-from app.core.di import get_document_service
+from app.core.di import get_document_service, get_export_service
 from app.domain.exceptions import DocumentNotFoundError, PermissionDeniedError
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -82,11 +82,11 @@ async def delete_document(
     except PermissionDeniedError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
 
-@router.get("/{document_id}/export")
+@router.get("/{document_id}/export", response_model=None)
 async def export_document(
         document_id: UUID,
         user_id: Annotated[UUID, Depends(get_current_user_id)],
-        export_service: Annotated[ExportService, Depends(ExportService)],
+        export_service: Annotated[ExportService, Depends(get_export_service)],
         format: Literal["txt", "docx"] = "txt"
 ) -> Response:
     try:

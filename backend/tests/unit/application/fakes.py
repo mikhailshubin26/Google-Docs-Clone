@@ -4,6 +4,7 @@ from uuid import UUID
 from app.domain.entities.document import Document
 from app.domain.entities.permission import Permission, Role
 from app.domain.entities.user import User
+from app.domain.ot.operation import Operation
 
 
 class FakeUserRepository:
@@ -68,3 +69,21 @@ class FakePermissionRepository:
 
     async def list_for_document(self, document_id: UUID) -> list[Permission]:
         return [p for (doc_id, _), p in self._permissions.items() if doc_id == document_id]
+
+class FakeOperationLogRepository:
+    def __init__(self) -> None:
+        self._logs: dict[UUID, list[Operation]] = {}
+
+    async def append(self, document_id: UUID, revision: int, operation: Operation) -> None:
+        self._logs.setdefault(document_id, []).append(operation)
+
+    async def get_operations_since(self, document_id: UUID, since_revision: int) -> list[Operation]:
+        ops = self._logs.get(document_id, [])
+        return ops[since_revision:]
+
+    async def get_latest_revision(self, document_id: UUID) -> int:
+        return len(self._logs.get(document_id, []))
+
+    async def compact(self, document_id: UUID, up_to_revision: int) -> None:
+        ops = self._logs.get(document_id, [])
+        self._logs[document_id] = ops[up_to_revision:]

@@ -55,7 +55,7 @@ class OTController:
         if operation.base_revision > current_revision:
             raise OperationConflictError(operation.base_revision, current_revision)
 
-        concurrent_ops = await self._operation_log_repo.get_operations_since(document_id, current_revision)
+        concurrent_ops = await self._operation_log_repo.get_operations_since(document_id, operation.base_revision)
 
         # Лог был схлопнут до ревизии выше
         expected_count = current_revision - operation.base_revision

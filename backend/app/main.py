@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 # Место для инициализации/освобождения ресурсов на весь процесс
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("app starting", environemt=settings.environemt)
+    logger.info("app starting", environment=settings.environment)
     yield
     logger.info("app stopping")
 

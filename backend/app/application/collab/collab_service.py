@@ -41,8 +41,8 @@ class CollabService:
             )
 
     # Запускает фоновую задачу подписки на канал документа
-    def _ensure_subsciber(self, document_id: UUID) -> None:
-        if document_id not in self._subscriber_tasks:
+    def _ensure_subscriber(self, document_id: UUID) -> None:
+        if document_id in self._subscriber_tasks:
             return
         task = asyncio.create_task(self._listen_channel(document_id))
         self._subscriber_tasks[document_id] = task

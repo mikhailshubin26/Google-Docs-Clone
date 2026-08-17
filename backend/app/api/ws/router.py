@@ -103,7 +103,7 @@ async def document_room(
     connection = WebSocketConnection(websocket)
 
     content, revision = await collab_service.join_room(
-        document=document_id,
+        document_id=document_id,
         user_id=user.id,
         display_name=user.display_name,
         connection=connection
