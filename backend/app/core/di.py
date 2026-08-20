@@ -63,6 +63,7 @@ def get_session_factory(engine=Depends(get_engine)):
 async def get_db_session(session_factory = Depends(get_session_factory))->AsyncGenerator[AsyncSession, None]:
     async with session_factory() as session:
         yield session
+        await session.commit()
 
 # Один раз создаёт и возвращает клиент Redis
 def get_redis(settings: Annotated[Settings, Depends(get_settings)]) -> Redis:
